@@ -12,7 +12,7 @@ use Illuminate\View\View;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Afficher le formulaire de connexion
      */
     public function create(): View
     {
@@ -20,28 +20,33 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Traiter la connexion
      */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Redirection selon le rôle
+        if (auth()->user()->hasRole('gestionnaire')) {
+            return redirect()->route('admin.dashboard')
+                             ->with('success', 'Bienvenue ' . auth()->user()->name . ' !');
+        }
+
+        return redirect()->route('client.catalog.index')
+                         ->with('success', 'Bienvenue ' . auth()->user()->name . ' !');
     }
 
     /**
-     * Destroy an authenticated session.
+     * Déconnexion
      */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }
