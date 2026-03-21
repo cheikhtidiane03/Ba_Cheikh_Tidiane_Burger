@@ -2,85 +2,106 @@
 @tailwind components;
 @tailwind utilities;
 
-/* =============================================
-   ISI BURGER — Styles personnalisés
-   ============================================= */
+@layer base {
+    body { font-family: 'Figtree', sans-serif; }
+}
 
 @layer components {
 
-    /* Bouton primaire orange */
+    /* ══ BOUTONS ══ */
     .btn-primary {
-        @apply bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium
-               hover:bg-orange-700 active:bg-orange-800
-               transition-colors duration-200
-               inline-flex items-center gap-2;
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold
+               bg-blue-600 text-white
+               hover:bg-blue-700 active:scale-95
+               shadow-sm shadow-blue-600/20
+               transition-all duration-150 cursor-pointer;
     }
-
-    /* Bouton secondaire */
     .btn-secondary {
-        @apply bg-white text-gray-700 px-4 py-2 rounded-lg text-sm font-medium
-               border border-gray-300
-               hover:bg-gray-50
-               transition-colors duration-200
-               inline-flex items-center gap-2;
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
+               bg-white text-gray-700 border border-gray-200
+               hover:bg-gray-50 active:scale-95
+               dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700
+               transition-all duration-150 cursor-pointer;
     }
-
-    /* Bouton danger */
     .btn-danger {
-        @apply bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium
-               hover:bg-red-700
-               transition-colors duration-200
-               inline-flex items-center gap-2;
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
+               bg-red-500 text-white
+               hover:bg-red-600 active:scale-95
+               transition-all duration-150 cursor-pointer;
+    }
+    .btn-success {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
+               bg-emerald-500 text-white
+               hover:bg-emerald-600 active:scale-95
+               transition-all duration-150 cursor-pointer;
+    }
+    .btn-warning {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
+               bg-amber-500 text-white
+               hover:bg-amber-600 active:scale-95
+               transition-all duration-150 cursor-pointer;
     }
 
-    /* Carte générique */
+    /* ══ CARTES ══ */
     .card {
-        @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+        @apply bg-white border border-gray-100 shadow-sm rounded-2xl p-5
+               dark:bg-slate-800 dark:border-slate-700;
     }
 
-    /* Badge de statut commande */
-    .badge-pending {
-        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-               bg-yellow-100 text-yellow-800;
-    }
-
-    .badge-preparing {
-        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-               bg-blue-100 text-blue-800;
-    }
-
-    .badge-ready {
-        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-               bg-green-100 text-green-800;
-    }
-
-    .badge-paid {
-        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-               bg-purple-100 text-purple-800;
-    }
-
-    .badge-cancelled {
-        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-               bg-red-100 text-red-800;
-    }
-
-    /* Champ de formulaire */
+    /* ══ FORMULAIRES ══ */
     .form-input {
-        @apply w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
-               focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent
-               placeholder-gray-400;
+        @apply w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm
+               bg-gray-50 text-gray-900 placeholder-gray-400
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white
+               dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400
+               dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:focus:bg-slate-600
+               transition-all duration-150;
     }
-
     .form-label {
-        @apply block text-sm font-medium text-gray-700 mb-1;
+        @apply block text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5;
     }
 
-    /* Tableau */
+    /* ══ TABLEAUX ══ */
     .table-th {
-        @apply px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider;
+        @apply px-4 py-3 text-left text-xs font-bold uppercase tracking-wider
+               text-gray-400 dark:text-slate-500;
+    }
+    .table-td {
+        @apply px-4 py-3.5 text-sm text-gray-700 dark:text-slate-300;
     }
 
-    .table-td {
-        @apply px-4 py-3 text-sm text-gray-700;
+    /* ══ BADGES ══ */
+    .badge-pending {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold
+               bg-amber-100 text-amber-700
+               dark:bg-amber-500/15 dark:text-amber-400;
+    }
+    .badge-preparing {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold
+               bg-blue-100 text-blue-700
+               dark:bg-blue-500/15 dark:text-blue-400;
+    }
+    .badge-ready {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold
+               bg-emerald-100 text-emerald-700
+               dark:bg-emerald-500/15 dark:text-emerald-400;
+    }
+    .badge-paid {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold
+               bg-purple-100 text-purple-700
+               dark:bg-purple-500/15 dark:text-purple-400;
+    }
+    .badge-cancelled {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold
+               bg-red-100 text-red-600
+               dark:bg-red-500/15 dark:text-red-400;
+    }
+
+    /* ══ STAT CARD ══ */
+    .stat-card {
+        @apply card flex items-center gap-4;
+    }
+    .stat-icon {
+        @apply w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0;
     }
 }

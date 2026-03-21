@@ -59,16 +59,24 @@ Route::prefix('admin')
 // ESPACE CLIENT
 // Protégé par : auth + middleware client
 // -----------------------------------------------
+// -----------------------------------------------
+// CATALOGUE — accessible à tout utilisateur connecté
+// -----------------------------------------------
+Route::prefix('client')
+     ->name('client.')
+     ->middleware(['auth'])
+     ->group(function () {
+    Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
+    Route::get('/catalog/{product:slug}', [CatalogController::class, 'show'])->name('catalog.show');
+});
+
+// -----------------------------------------------
+// ESPACE CLIENT — réservé au rôle client
+// -----------------------------------------------
 Route::prefix('client')
      ->name('client.')
      ->middleware(['auth', 'client'])
      ->group(function () {
-
-    // Catalogue
-    Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
-    Route::get('/catalog/{product:slug}', [CatalogController::class, 'show'])->name('catalog.show');
-
-    // Commandes (étape 5)
     Route::get('/orders', [\App\Http\Controllers\Client\OrderController::class, 'index'])
          ->name('orders.index');
     Route::post('/orders', [\App\Http\Controllers\Client\OrderController::class, 'store'])
