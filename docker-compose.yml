@@ -9,10 +9,10 @@ services:
 
   # ── Application Laravel ────────────────────────
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: app
+  build:
+    context: .
+    dockerfile: Dockerfile
+    target: app
     container_name: isi_burger_app
     restart: unless-stopped
     environment:

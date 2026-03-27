@@ -1,15 +1,11 @@
-// ══════════════════════════════════════════════════
-//  ISI BURGER — Jenkinsfile simplifié
-// ══════════════════════════════════════════════════
-
 pipeline {
 
     agent any
 
     environment {
-        APP_NAME   = 'isi-burger'
-        BRANCH     = 'Cheikh-Tidiane-Ba'
-        REPO_URL   = 'https://github.com/cheikhtidiane03/Ba_Cheikh_Tidiane_Burger'
+        APP_NAME = 'isi-burger'
+        BRANCH   = 'Cheikh-Tidiane-Ba'
+        REPO_URL = 'https://github.com/cheikhtidiane03/Ba_Cheikh_Tidiane_Burger'
     }
 
     triggers {
@@ -18,51 +14,45 @@ pipeline {
 
     stages {
 
-        stage('📥 1. Pull du code') {
+        stage('📥 Clone') {
             steps {
-                echo '📥 Récupération du code depuis GitHub...'
-                git branch: "${BRANCH}",
-                    url: "${REPO_URL}"
-                echo "✅ Code récupéré !"
+                echo '📥 Clonage du projet...'
+                git branch: "${BRANCH}", url: "${REPO_URL}"
             }
         }
 
-        stage('📦 2. Installation dépendances PHP') {
+        stage('🐳 Build Docker') {
             steps {
                 sh '''
-                docker run --rm \
-                -v $PWD:/app \
-                -w /app \
-                composer install --no-dev --prefer-dist --no-interaction
+                echo "🐳 Build des containers..."
+                docker compose down || true
+                docker compose build --no-cache
                 '''
             }
         }
 
-        stage('🎨 3. Build assets JS/CSS') {
+        stage('🚀 Deploy') {
             steps {
-                echo '🎨 Build Tailwind + Vite...'
-                sh 'npm ci'
-                sh 'npm run build'
-                echo '✅ Assets compilés'
+                sh '''
+                echo "🚀 Lancement des containers..."
+                docker compose up -d
+                '''
             }
         }
 
-        stage('🐳 4. Build image Docker') {
+        stage('🧹 Clean') {
             steps {
-                echo '🐳 Construction image Docker...'
-                sh 'docker build -t isi-burger:latest .'
-                echo '✅ Image Docker créée'
+                sh 'docker system prune -f || true'
             }
         }
-
     }
 
     post {
         success {
-            echo '✅ Pipeline ISI BURGER terminé avec succès !'
+            echo '✅ Application déployée sur http://localhost:8000'
         }
         failure {
-            echo '❌ Pipeline échoué — vérifier les logs'
+            echo '❌ Pipeline échoué'
         }
     }
 }
