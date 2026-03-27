@@ -29,9 +29,12 @@ pipeline {
 
         stage('📦 2. Installation dépendances PHP') {
             steps {
-                echo '📦 Installation Composer...'
-                sh 'composer install --no-dev --prefer-dist --no-interaction'
-                echo '✅ Dépendances PHP installées'
+                sh '''
+                docker run --rm \
+                -v $PWD:/app \
+                -w /app \
+                composer install --no-dev --prefer-dist --no-interaction
+                '''
             }
         }
 
