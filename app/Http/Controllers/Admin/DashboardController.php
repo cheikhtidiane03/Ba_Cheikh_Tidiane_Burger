@@ -13,60 +13,78 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // ── Stats journalières ──────────────────────────
+        // ══════════════════════════════════════
+        // 1. STATS JOURNALIÈRES
+        // ══════════════════════════════════════
+
+        // Commandes en cours de la journée (pas payées, pas annulées)
+        $ordersActive = Order::today()->active()->count();
+
+        // Commandes validées (payées aujourd'hui)
+        $ordersPaidToday = Order::today()
+                                ->where('status', Order::STATUS_PAID)
+                                ->count();
+
+        // Recettes journalières = total des paiements reçus aujourd'hui
+        $revenueToday = Payment::whereDate('paid_at', today())->sum('amount');
+
+        // Ruptures de stock
+        $outOfStock = Product::outOfStock()->count();
+
         $stats = [
-            // Commandes en cours (pas payées, pas annulées)
-            'orders_active'     => Order::today()->active()->count(),
-
-            // Commandes validées (payées aujourd'hui)
-            'orders_paid_today' => Order::today()
-                                        ->where('status', Order::STATUS_PAID)
-                                        ->count(),
-
-            // Recettes journalières (total paiements reçus aujourd'hui)
-            'revenue_today'     => Payment::whereDate('paid_at', today())->sum('amount'),
-
-            // Ruptures de stock
-            'out_of_stock'      => Product::outOfStock()->count(),
+            'orders_active'     => $ordersActive,
+            'orders_paid_today' => $ordersPaidToday,
+            'revenue_today'     => $revenueToday,
+            'out_of_stock'      => $outOfStock,
+            'orders_today'      => Order::today()->count(),
         ];
 
-        // ── 5 dernières commandes ───────────────────────
-        $recentOrders = Order::with('user')
-                             ->latest()
-                             ->take(5)
-                             ->get();
-
-        // ── Commandes par mois (12 derniers mois) ───────
+        // ══════════════════════════════════════
+        // 2. GRAPHIQUE : Commandes par mois (12 derniers mois)
+        // ══════════════════════════════════════
         $ordersPerMonth = Order::select(
-                DB::raw("TO_CHAR(created_at, 'Mon YYYY') as month"),
-                DB::raw('COUNT(*) as total')
+                DB::raw("TO_CHAR(created_at, 'Mon') AS month"),
+                DB::raw("TO_CHAR(created_at, 'MM') AS month_num"),
+                DB::raw("DATE_TRUNC('month', created_at) AS month_date"),
+                DB::raw('COUNT(*) AS total')
             )
             ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
             ->groupBy(
-                DB::raw("TO_CHAR(created_at, 'Mon YYYY')"),
+                DB::raw("TO_CHAR(created_at, 'Mon')"),
+                DB::raw("TO_CHAR(created_at, 'MM')"),
                 DB::raw("DATE_TRUNC('month', created_at)")
             )
-            ->orderBy(DB::raw("DATE_TRUNC('month', created_at)"))
+            ->orderBy('month_date')
             ->get();
 
-        // ── Produits par catégorie ───────────────────────
+        // ══════════════════════════════════════
+        // 3. GRAPHIQUE : Nombre de produits par catégorie
+        // ══════════════════════════════════════
         $productsByCategory = Category::select(
                 'categories.name',
-                DB::raw('COUNT(products.id) as total')
+                DB::raw('COUNT(products.id) AS total')
             )
-            ->leftJoin('products', function($join) {
+            ->leftJoin('products', function ($join) {
                 $join->on('categories.id', '=', 'products.category_id')
                      ->where('products.is_archived', false);
             })
             ->groupBy('categories.id', 'categories.name')
-            ->having(DB::raw('COUNT(products.id)'), '>', 0)
+            ->orderByDesc(DB::raw('COUNT(products.id)'))
             ->get();
+
+        // ══════════════════════════════════════
+        // 4. DERNIÈRES COMMANDES
+        // ══════════════════════════════════════
+        $recentOrders = Order::with('user')
+                             ->latest()
+                             ->take(6)
+                             ->get();
 
         return view('admin.dashboard.index', compact(
             'stats',
-            'recentOrders',
             'ordersPerMonth',
-            'productsByCategory'
+            'productsByCategory',
+            'recentOrders'
         ));
     }
 }

@@ -10,10 +10,20 @@ class IsClient
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check() || !auth()->user()->hasRole('gestionnaire')) {
-            abort(403, 'Accès réservé aux gestionnaires.');
+        if (!auth()->check()) {
+            return redirect()->route('login');
         }
 
-        return $next($request);
+        // Gestionnaire a accès à tout
+        if (auth()->user()->hasRole('gestionnaire')) {
+            return $next($request);
+        }
+
+        // Client a accès à ses propres pages
+        if (auth()->user()->hasRole('client')) {
+            return $next($request);
+        }
+
+        abort(403, 'Accès non autorisé.');
     }
 }

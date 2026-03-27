@@ -59,13 +59,11 @@ class OrderController extends Controller
 
         $order->update(['status' => $newStatus]);
 
-        // Envoi email facture PDF quand commande est PRÊTE
         if ($newStatus === Order::STATUS_READY) {
             try {
                 Mail::to($order->user->email)->send(new OrderReadyMail($order));
             } catch (\Exception $e) {
-                // Log l'erreur mais ne bloque pas
-                \Log::error('Erreur envoi email commande prête : ' . $e->getMessage());
+                \Log::error('Email commande prête : ' . $e->getMessage());
             }
         }
 
