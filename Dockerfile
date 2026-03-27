@@ -1,31 +1,27 @@
 # ══════════════════════════════════════════════════
-#  ISI BURGER — Dockerfile
-#  Multi-stage build : optimisé pour la production
+#  ISI BURGER — Dockerfile corrigé
 # ══════════════════════════════════════════════════
 
-# ── Stage 1 : Build des assets JS/CSS ─────────────
+# ── Stage 1 : Build assets JS/CSS ─────────────────
 FROM node:20-alpine AS node-builder
 
 WORKDIR /app
 
-# Copier uniquement les fichiers nécessaires au build
 COPY package*.json ./
 COPY vite.config.js ./
 COPY tailwind.config.js ./
-COPY postcss.config.js ./
-COPY resources/css ./resources/css
-COPY resources/js ./resources/js
 
-# Installer les dépendances et builder
-RUN npm ci --prefer-offline
+# postcss.config.js est optionnel
+COPY resources/css ./resources/css
+COPY resources/js  ./resources/js
+
+RUN npm ci
 RUN npm run build
 
 # ── Stage 2 : Application PHP ─────────────────────
-FROM php:8.2-fpm-alpine AS app
+FROM php:8.2-fpm-alpine
 
-# Métadonnées
 LABEL maintainer="ISI BURGER"
-LABEL description="Application Laravel ISI BURGER"
 
 # Dépendances système
 RUN apk add --no-cache \
@@ -41,33 +37,21 @@ RUN apk add --no-cache \
     supervisor
 
 # Extensions PHP
-RUN docker-php-ext-configure gd \
-        --with-freetype \
-        --with-jpeg \
-    && docker-php-ext-install \
-        pdo \
-        pdo_pgsql \
-        pgsql \
-        gd \
-        zip \
-        bcmath \
-        opcache \
-        pcntl
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql pgsql gd zip bcmath opcache pcntl
 
+# Autoriser Composer en root
 ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Installer Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
-# Créer l'utilisateur applicatif (sécurité)
-RUN addgroup -g 1000 -S laravel \
-    && adduser -u 1000 -S laravel -G laravel
-
 WORKDIR /var/www/html
 
-# Copier les fichiers de dépendances d'abord (cache Docker)
+# 1. Copier composer files
 COPY composer.json composer.lock ./
 
-# Installer les dépendances PHP (sans dev en production)
+# 2. Installer dépendances PHP
 RUN composer install \
     --no-dev \
     --no-scripts \
@@ -75,35 +59,34 @@ RUN composer install \
     --prefer-dist \
     --no-interaction
 
-# Copier le code source
+# 3. Copier tout le code
 COPY . .
 
-# Récupérer les assets buildés depuis le stage node
+# 4. Copier les assets buildés
 COPY --from=node-builder /app/public/build ./public/build
 
-# Finaliser l'autoloader
-RUN composer install --no-dev --optimize-autoloader --no-scripts
-# Permissions
-RUN chown -R laravel:laravel /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+# 5. Générer l'autoloader APRÈS avoir copié le code
+RUN composer dump-autoload --optimize --no-dev
 
-# Copier les configs serveur
-COPY docker/nginx.conf /etc/nginx/nginx.conf
+# 6. Créer le fichier .env pour la production
+RUN cp .env.example .env \
+    && php artisan key:generate --force
+
+# 7. Permissions
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views \
+    && chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html
+
+# Configs serveur
+COPY docker/nginx.conf      /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
-COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
-
-# Exposer le port
-EXPOSE 80
-
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost/up || exit 1
-
-# Script de démarrage
-COPY docker/entrypoint.sh /entrypoint.sh
+COPY docker/php.ini         /usr/local/etc/php/conf.d/custom.ini
+COPY docker/entrypoint.sh   /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-USER laravel
+EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost/up || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]

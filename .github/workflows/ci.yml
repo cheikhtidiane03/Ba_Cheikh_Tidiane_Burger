@@ -1,6 +1,6 @@
 # ══════════════════════════════════════════════════
-#  ISI BURGER — GitHub Actions CI/CD Pipeline
-#  Branch : nom_prenom_burger
+#  ISI BURGER — GitHub Actions CI/CD
+#  Version simplifiée pour débutant
 # ══════════════════════════════════════════════════
 
 name: ISI BURGER — CI/CD Pipeline
@@ -14,14 +14,10 @@ on:
     branches:
       - Cheikh-Tidiane-Ba
 
-env:
-  IMAGE_NAME: isi-burger
-  DOCKER_REGISTRY: ghcr.io/${{ github.repository_owner }}
-
 jobs:
 
   # ══════════════════════════════════════
-  # JOB 1 : Tests et validation
+  # JOB 1 : Tests
   # ══════════════════════════════════════
   test:
     name: 🧪 Tests Laravel
@@ -33,7 +29,7 @@ jobs:
         env:
           POSTGRES_DB: isi_burger
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 19732580
+          POSTGRES_PASSWORD: secret
         ports:
           - 5432:5432
         options: >-
@@ -51,45 +47,36 @@ jobs:
         with:
           php-version: '8.2'
           extensions: pdo, pdo_pgsql, gd, zip, bcmath
-          coverage: none
 
-      - name: 📦 Cache des dépendances Composer
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
+      - name: 📦 Installation Composer
+        run: composer install --no-dev --prefer-dist --no-interaction
 
-      - name: 📦 Installation des dépendances PHP
-        run: composer install --no-dev --prefer-dist --no-interaction --no-progress
+      - name: 🎨 Installation npm + build assets
+        run: |
+          npm ci
+          npm run build
 
-      - name: 🎨 Installation des dépendances JS
-        run: npm ci
-
-      - name: 🔨 Build des assets Tailwind/Vite
-        run: npm run build
-
-      - name: ⚙️ Configuration de l'environnement
+      - name: ⚙️ Configuration .env
         run: |
           cp .env.example .env
-          echo "APP_KEY=" >> .env
           php artisan key:generate
-          echo "DB_CONNECTION=pgsql" >> .env
-          echo "DB_HOST=127.0.0.1" >> .env
-          echo "DB_PORT=5432" >> .env
-          echo "DB_DATABASE=isi_burger" >> .env
-          echo "DB_USERNAME=postgres" >> .env
-          echo "DB_PASSWORD=19732580" >> .env
+          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env
+          sed -i 's/# DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i 's/# DB_PORT=.*/DB_PORT=5432/' .env
+          sed -i 's/# DB_DATABASE=.*/DB_DATABASE=isi_burger/' .env
+          sed -i 's/# DB_USERNAME=.*/DB_USERNAME=postgres/' .env
+          sed -i 's/# DB_PASSWORD=.*/DB_PASSWORD=secret/' .env
 
-      - name: 🗄️ Migration de la base de données
+      - name: 🗄️ Migration base de données
         run: php artisan migrate --force
 
-      - name: ✅ Vérification de la config
+      - name: ✅ Vérification
         run: php artisan about
 
   # ══════════════════════════════════════
-  # JOB 2 : Build de l'image Docker
+  # JOB 2 : Build image Docker
   # ══════════════════════════════════════
-  build:
+  build-docker:
     name: 🐳 Build image Docker
     runs-on: ubuntu-latest
     needs: test
@@ -98,60 +85,14 @@ jobs:
       - name: 📥 Checkout du code
         uses: actions/checkout@v4
 
-      - name: 🐳 Configuration Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: 🔑 Connexion au registry GitHub (GHCR)
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🏷️ Extraction des métadonnées Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix=sha-
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-
-      - name: 🐳 Build et push de l'image Docker
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            APP_ENV=production
-
-      - name: 📋 Résumé du build
+      - name: 🐳 Build de l'image Docker
         run: |
-          echo "## 🐳 Image Docker buildée avec succès !" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Tags:** ${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          docker build -t isi-burger:latest .
+          echo "✅ Image Docker buildée avec succès"
+          docker images isi-burger
 
-  # ══════════════════════════════════════
-  # JOB 3 : Notification
-  # ══════════════════════════════════════
-  notify:
-    name: 📢 Notification
-    runs-on: ubuntu-latest
-    needs: [test, build]
-    if: always()
-
-    steps:
-      - name: ✅ Pipeline terminé
+      - name: 📋 Résumé
         run: |
-          echo "## Pipeline ISI BURGER" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Auteur:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Status:** ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "## ✅ Build réussi !" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
