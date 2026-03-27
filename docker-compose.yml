@@ -1,0 +1,79 @@
+# ══════════════════════════════════════════════════
+#  ISI BURGER — Docker Compose
+#  Services : app, postgres, nginx
+# ══════════════════════════════════════════════════
+
+version: '3.8'
+
+services:
+
+  # ── Application Laravel ────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
+    container_name: isi_burger_app
+    restart: unless-stopped
+    environment:
+      APP_NAME: "ISI BURGER"
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: http://localhost
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: isi_burger
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      MAIL_MAILER: smtp
+      MAIL_HOST: ${MAIL_HOST:-sandbox.smtp.mailtrap.io}
+      MAIL_PORT: ${MAIL_PORT:-2525}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_FROM_ADDRESS: noreply@isiburger.com
+      MAIL_FROM_NAME: "ISI BURGER"
+      FILESYSTEM_DISK: public
+      QUEUE_CONNECTION: sync
+    volumes:
+      - app_storage:/var/www/html/storage/app/public
+    ports:
+      - "8000:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - isi_burger_network
+
+  # ── Base de données PostgreSQL ─────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: isi_burger_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: isi_burger
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d isi_burger"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - isi_burger_network
+
+# ── Volumes persistants ────────────────────────────
+volumes:
+  postgres_data:
+    driver: local
+  app_storage:
+    driver: local
+
+# ── Réseau interne ─────────────────────────────────
+networks:
+  isi_burger_network:
+    driver: bridge
