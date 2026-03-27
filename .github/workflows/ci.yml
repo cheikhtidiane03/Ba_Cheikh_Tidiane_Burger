@@ -8,11 +8,11 @@ name: ISI BURGER — CI/CD Pipeline
 on:
   push:
     branches:
-      - nom_prenom_burger
+      - Cheikh-Tidiane-Ba
       - main
   pull_request:
     branches:
-      - nom_prenom_burger
+      - Cheikh-Tidiane-Ba
 
 env:
   IMAGE_NAME: isi-burger
@@ -31,9 +31,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: isi_burger_test
+          POSTGRES_DB: isi_burger
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: secret
+          POSTGRES_PASSWORD: 19732580
         ports:
           - 5432:5432
         options: >-
@@ -76,9 +76,9 @@ jobs:
           echo "DB_CONNECTION=pgsql" >> .env
           echo "DB_HOST=127.0.0.1" >> .env
           echo "DB_PORT=5432" >> .env
-          echo "DB_DATABASE=isi_burger_test" >> .env
+          echo "DB_DATABASE=isi_burger" >> .env
           echo "DB_USERNAME=postgres" >> .env
-          echo "DB_PASSWORD=secret" >> .env
+          echo "DB_PASSWORD=19732580" >> .env
 
       - name: 🗄️ Migration de la base de données
         run: php artisan migrate --force
