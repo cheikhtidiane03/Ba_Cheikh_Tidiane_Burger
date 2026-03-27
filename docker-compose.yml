@@ -48,7 +48,7 @@ services:
   # ── Base de données PostgreSQL ─────────────────
   postgres:
     image: postgres:15-alpine
-    container_name: isi_burger_db
+    container_name: isi_burge
     restart: unless-stopped
     environment:
       POSTGRES_DB: isi_burger

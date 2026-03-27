@@ -54,6 +54,7 @@ RUN docker-php-ext-configure gd \
         opcache \
         pcntl
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
 # Installer Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
@@ -81,8 +82,7 @@ COPY . .
 COPY --from=node-builder /app/public/build ./public/build
 
 # Finaliser l'autoloader
-RUN composer dump-autoload --optimize --no-dev
-
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Permissions
 RUN chown -R laravel:laravel /var/www/html \
     && chmod -R 755 /var/www/html/storage \
