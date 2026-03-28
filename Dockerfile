@@ -1,5 +1,5 @@
 # ══════════════════════════════════════════════════
-#  ISI BURGER — Dockerfile FIX
+#  ISI BURGER — Dockerfile Final Corrigé
 # ══════════════════════════════════════════════════
 
 # ── Stage 1 : Build assets JS/CSS ─────────────────
@@ -12,11 +12,10 @@ COPY vite.config.js ./
 COPY tailwind.config.js ./
 COPY resources ./resources
 
-RUN npm ci
-RUN npm run build
+RUN npm ci && npm run build
 
 # ── Stage 2 : Application PHP ─────────────────────
-FROM php:8.2-fpm-alpine AS app
+FROM php:8.2-fpm-alpine
 
 RUN apk add --no-cache \
     postgresql-dev \
@@ -39,31 +38,50 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Copier composer files en premier (cache Docker layers)
 COPY composer.json composer.lock ./
 
+# Installer dépendances PHP
 RUN composer install \
     --no-dev \
+    --no-scripts \
+    --no-autoloader \
     --prefer-dist \
-    --no-interaction \
-    --optimize-autoloader
+    --no-interaction
 
+# Copier tout le code source
 COPY . .
 
+# Copier les assets buildés depuis le stage node
 COPY --from=node-builder /app/public/build ./public/build
 
-RUN cp .env.example .env \
-    && php artisan key:generate --force
+# Finaliser autoloader APRÈS avoir tout le code
+RUN composer dump-autoload --optimize --no-dev
 
+# Créer .env depuis example
+RUN cp .env.example .env && php artisan key:generate --force
+
+# Créer les dossiers storage nécessaires
+RUN mkdir -p storage/logs \
+             storage/framework/cache \
+             storage/framework/sessions \
+             storage/framework/views \
+             bootstrap/cache
+
+# Permissions
 RUN chmod -R 775 storage bootstrap/cache \
     && chown -R www-data:www-data /var/www/html
 
-COPY docker/nginx.conf /etc/nginx/nginx.conf
+# Configs serveur
+COPY docker/nginx.conf       /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
-COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
-COPY docker/entrypoint.sh /entrypoint.sh
-
+COPY docker/php.ini          /usr/local/etc/php/conf.d/custom.ini
+COPY docker/entrypoint.sh    /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost/up || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
