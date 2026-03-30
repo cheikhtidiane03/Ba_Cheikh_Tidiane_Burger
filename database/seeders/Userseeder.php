@@ -14,9 +14,9 @@ class UserSeeder extends Seeder
         // Compte Gestionnaire
         // -----------------------------------------------
         $admin = User::firstOrCreate(
-            ['email' => 'admin@isiburger.com'],
+            ['email' => 'cheikhtidianeb764@gmail.com'],
             [
-                'name'     => 'Admin ISI BURGER',
+                'name'     => 'Cheikh Tidiane Ba',
                 'password' => Hash::make('password'),
             ]
         );
@@ -26,20 +26,20 @@ class UserSeeder extends Seeder
         // Compte Client de démonstration
         // -----------------------------------------------
         $client = User::firstOrCreate(
-            ['email' => 'client@isiburger.com'],
+            ['email' => 'fatou@gmail.com'],
             [
-                'name'     => 'Client Test',
+                'name'     => 'Fatou Ndiaye',
                 'password' => Hash::make('password'),
             ]
         );
         $client->assignRole('client');
 
-        $this->command->info('✅ Utilisateurs créés :');
+        //$this->command->info('✅ Utilisateurs créés :');
         $this->command->table(
             ['Rôle', 'Email', 'Mot de passe'],
             [
                 ['gestionnaire', 'admin@isiburger.com',  'password'],
-                ['client',       'client@isiburger.com', 'password'],
+                ['client',       'fatou@gmail.com', 'password'],
             ]
         );
     }

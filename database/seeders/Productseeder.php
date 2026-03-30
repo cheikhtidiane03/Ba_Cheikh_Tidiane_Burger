@@ -34,6 +34,6 @@ class ProductSeeder extends Seeder
             );
         }
 
-        $this->command->info('✅ Produits créés : ' . count($products));
+        //$this->command->info('✅ Produits créés : ' . count($products));
     }
 }
