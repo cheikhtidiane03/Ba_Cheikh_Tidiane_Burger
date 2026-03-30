@@ -1,7 +1,7 @@
 @extends('layouts.client')
 
-@section('title', 'Notre Carte')
-@section('page-title', 'Notre Carte')
+@section('title', 'Notre catalogue de burgers')
+@section('page-title', 'Nos Burger')
 @section('page-subtitle', 'Burgers artisanaux préparés à la commande')
 
 @section('content')
@@ -61,7 +61,7 @@
 @if($products->isEmpty())
     <div class="text-center py-24 bg-white dark:bg-slate-800
                 rounded-2xl border border-dashed border-gray-200 dark:border-slate-700">
-        <p class="text-6xl mb-4">🔍</p>
+        <p class="text-6xl mb-4"></p>
         <p class="font-bold text-lg text-gray-700 dark:text-slate-300 mb-1">Aucun burger trouvé</p>
         <p class="text-sm text-gray-400 dark:text-slate-500 mb-5">Essayez avec d'autres filtres</p>
         <a href="{{ route('client.catalog.index') }}" class="btn-primary">Voir tous les burgers</a>
@@ -114,7 +114,7 @@
                     <span class="absolute top-3 right-3
                                  bg-amber-500 text-white
                                  text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
-                        🔥 Plus que {{ $product->stock }} !
+                        Plus que {{ $product->stock }} !
                     </span>
                 @endif
             </div>

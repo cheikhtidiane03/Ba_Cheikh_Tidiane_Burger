@@ -26,7 +26,7 @@
                             <img src="{{ asset('storage/'.$item->product->image) }}"
                                  class="w-full h-full object-cover">
                         @else
-                            🍔
+                            
                         @endif
                     </div>
                     <div class="flex-1 min-w-0">
@@ -59,7 +59,7 @@
         @if($order->payment)
         <div class="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-2xl p-5">
             <div class="flex items-center gap-3 mb-2">
-                <div class="w-9 h-9 bg-emerald-100 dark:bg-emerald-500/20 rounded-xl flex items-center justify-center text-lg">💳</div>
+                <div class="w-9 h-9 bg-emerald-100 dark:bg-emerald-500/20 rounded-xl flex items-center justify-center text-lg"></div>
                 <div>
                     <p class="font-bold text-emerald-800 dark:text-emerald-400 text-sm">Paiement confirmé</p>
                     <p class="text-xs text-emerald-600 dark:text-emerald-500">{{ $order->payment->paid_at->format('d/m/Y à H:i') }}</p>
@@ -86,10 +86,10 @@
             @else
                 @php
                     $steps = [
-                        ['key' => 'pending',   'label' => 'En attente',     'icon' => '⏳'],
-                        ['key' => 'preparing', 'label' => 'En préparation', 'icon' => '👨‍🍳'],
-                        ['key' => 'ready',     'label' => 'Prête',          'icon' => '✅'],
-                        ['key' => 'paid',      'label' => 'Payée',          'icon' => '💰'],
+                        ['key' => 'pending',   'label' => 'En attente',     'icon' => ''],
+                        ['key' => 'preparing', 'label' => 'En préparation', 'icon' => ''],
+                        ['key' => 'ready',     'label' => 'Prête',          'icon' => ''],
+                        ['key' => 'paid',      'label' => 'Payée',          'icon' => ''],
                     ];
                     $vals = ['pending'=>0,'preparing'=>1,'ready'=>2,'paid'=>3];
                     $cur  = $vals[$order->status] ?? -1;
@@ -144,7 +144,7 @@
 
         <div class="space-y-2">
             <a href="{{ route('client.catalog.index') }}" class="btn-primary w-full justify-center">
-                🍔 Commander à nouveau
+                 Commander à nouveau
             </a>
             <a href="{{ route('client.orders.index') }}" class="btn-secondary w-full justify-center">
                 ← Mes commandes

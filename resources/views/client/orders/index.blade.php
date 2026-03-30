@@ -9,10 +9,10 @@
 @if($orders->isEmpty())
     <div class="text-center py-20 bg-white dark:bg-slate-800 rounded-2xl
                 border border-gray-100 dark:border-slate-700 shadow-sm">
-        <p class="text-5xl mb-3">📋</p>
+        <p class="text-5xl mb-3"></p>
         <p class="font-bold text-gray-400 dark:text-slate-500 mb-1">Aucune commande</p>
         <p class="text-sm text-gray-300 dark:text-slate-600 mb-5">Passez votre première commande !</p>
-        <a href="{{ route('client.catalog.index') }}" class="btn-primary">🍔 Voir le catalogue</a>
+        <a href="{{ route('client.catalog.index') }}" class="btn-primary">Voir le catalogue</a>
     </div>
 @else
     <div class="space-y-3">
@@ -28,7 +28,7 @@
                     <div class="w-10 h-10 bg-blue-50 dark:bg-blue-500/10 rounded-xl
                                 flex items-center justify-center flex-shrink-0 text-lg
                                 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition">
-                        🍔
+                        
                     </div>
                     <div class="min-w-0">
                         <div class="flex items-center gap-2 flex-wrap mb-0.5">

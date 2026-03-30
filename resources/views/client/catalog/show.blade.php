@@ -10,7 +10,7 @@
 <nav class="flex items-center gap-1.5 text-xs mb-6">
     <a href="{{ route('client.catalog.index') }}"
        class="text-gray-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition font-medium">
-        Notre Carte
+        Notre catalogue
     </a>
     <svg class="w-3 h-3 text-gray-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
@@ -29,7 +29,7 @@
                  alt="{{ $product->name }}"
                  class="w-full h-full object-cover">
         @else
-            <span class="text-[120px]">🍔</span>
+            <span class="text-[120px]"></span>
         @endif
     </div>
 
@@ -158,7 +158,7 @@
 
         <a href="{{ route('client.catalog.index') }}"
            class="btn-secondary justify-center mt-3 text-sm">
-            ← Retour à la carte
+            ← Retour au catalogue
         </a>
     </div>
 </div>
