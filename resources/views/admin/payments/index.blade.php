@@ -68,7 +68,7 @@
                     <td class="table-td font-black text-emerald-600 text-base">{{ $payment->formatted_amount }}</td>
                     <td class="table-td">
                         <span class="inline-flex items-center gap-1 bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full text-xs font-semibold">
-                            💵 Espèces
+                            Espèces
                         </span>
                     </td>
                     <td class="table-td text-gray-500 text-sm">{{ $payment->recorder->name }}</td>
@@ -85,7 +85,7 @@
                 @empty
                 <tr>
                     <td colspan="7" class="text-center py-14">
-                        <div class="text-4xl mb-2">💳</div>
+                        <div class="text-4xl mb-2"></div>
                         <p class="text-gray-400">Aucun paiement enregistré</p>
                     </td>
                 </tr>

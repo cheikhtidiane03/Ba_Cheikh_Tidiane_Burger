@@ -199,7 +199,7 @@
                 @empty
                 <tr>
                     <td colspan="6" class="py-16 text-center">
-                        <p class="text-5xl mb-3">🍔</p>
+                        <p class="text-5xl mb-3"></p>
                         <p class="font-semibold text-gray-400 dark:text-slate-500 mb-3">Aucun burger dans le catalogue</p>
                         <button onclick="openModal()" class="btn-primary text-xs">
                             Ajouter le premier burger
@@ -428,11 +428,11 @@ function triggerConfirm(title, msg, type, label, formId) {
     const btn  = document.getElementById('confirmBtn');
 
     if (type === 'delete') {
-        icon.textContent  = '🗑️';
+        icon.textContent  = '';
         icon.className    = 'w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 bg-red-100 dark:bg-red-500/20';
         btn.className     = 'btn-danger flex-1 justify-center';
     } else {
-        icon.textContent  = '⚠️';
+        icon.textContent  = '';
         icon.className    = 'w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 bg-amber-100 dark:bg-amber-500/20';
         btn.className     = 'btn-warning flex-1 justify-center';
     }

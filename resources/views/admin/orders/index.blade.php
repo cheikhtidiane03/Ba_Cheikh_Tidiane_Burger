@@ -41,7 +41,7 @@
         <input type="hidden" name="status" value="{{ request('status') }}">
     @endif
     <input type="text" name="search" value="{{ request('search') }}"
-           placeholder="🔍 Référence ou client..."
+           placeholder="Référence ou client..."
            class="form-input max-w-xs">
     <input type="date" name="date" value="{{ request('date') }}"
            class="form-input max-w-xs">

@@ -6,12 +6,8 @@
 
 @section('content')
 
-{{-- ══════════════════════════════════════
-     STATS JOURNALIÈRES (4 cartes)
-══════════════════════════════════════ --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
-    {{-- Commandes en cours --}}
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5
                 border-l-4 border-l-amber-400">
         <div class="flex items-center justify-between mb-3">
@@ -30,7 +26,6 @@
         <p class="text-xs text-gray-400 dark:text-slate-500 font-medium mt-0.5">Commandes en cours</p>
     </div>
 
-    {{-- Commandes validées --}}
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5
                 border-l-4 border-l-emerald-400">
         <div class="flex items-center justify-between mb-3">
@@ -49,7 +44,6 @@
         <p class="text-xs text-gray-400 dark:text-slate-500 font-medium mt-0.5">Commandes payées aujourd'hui</p>
     </div>
 
-    {{-- Recettes journalières --}}
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5
                 border-l-4 border-l-blue-500">
         <div class="flex items-center justify-between mb-3">
@@ -71,7 +65,6 @@
         <p class="text-xs text-gray-400 dark:text-slate-500 font-medium mt-0.5">Recettes journalières</p>
     </div>
 
-    {{-- Ruptures de stock --}}
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5
                 border-l-4 {{ $stats['out_of_stock'] > 0 ? 'border-l-red-400' : 'border-l-gray-200 dark:border-l-slate-700' }}">
         <div class="flex items-center justify-between mb-3">
@@ -94,12 +87,8 @@
 
 </div>
 
-{{-- ══════════════════════════════════════
-     GRAPHIQUES CHART.JS
-══════════════════════════════════════ --}}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
 
-    {{-- Graphique 1 : Commandes par mois --}}
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5">
         <div class="flex items-center justify-between mb-5">
             <div>
@@ -120,7 +109,6 @@
         </div>
     </div>
 
-    {{-- Graphique 2 : Produits par catégorie --}}
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm p-5">
         <div class="flex items-center justify-between mb-5">
             <div>
@@ -145,9 +133,6 @@
 
 </div>
 
-{{-- ══════════════════════════════════════
-     DERNIÈRES COMMANDES
-══════════════════════════════════════ --}}
 <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
 
     <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
@@ -236,20 +221,17 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-// ── Config globale Chart.js ──────────────────────
 const isDarkMode = document.documentElement.classList.contains('dark');
 Chart.defaults.font.family = "'Figtree', sans-serif";
 Chart.defaults.font.size   = 11;
 Chart.defaults.color       = isDarkMode ? '#94a3b8' : '#9ca3af';
 
-// ── Données PHP → JS ─────────────────────────────
 const ordersLabels = {!! json_encode($ordersPerMonth->pluck('month')) !!};
 const ordersTotals = {!! json_encode($ordersPerMonth->pluck('total')->map(fn($v) => (int)$v)) !!};
 
 const catLabels = {!! json_encode($productsByCategory->pluck('name')) !!};
 const catTotals = {!! json_encode($productsByCategory->pluck('total')->map(fn($v) => (int)$v)) !!};
 
-// ── Graphique 1 : Commandes par mois (barres) ────
 const ordersChart = new Chart(document.getElementById('ordersChart'), {
     type: 'bar',
     data: {
@@ -294,7 +276,6 @@ const ordersChart = new Chart(document.getElementById('ordersChart'), {
     }
 });
 
-// ── Graphique 2 : Produits par catégorie (donut) ──
 const palette = isDarkMode
     ? ['rgba(59,130,246,.8)','rgba(14,165,233,.8)','rgba(139,92,246,.8)',
        'rgba(16,185,129,.8)','rgba(245,158,11,.8)','rgba(239,68,68,.8)','rgba(249,115,22,.8)']
@@ -342,9 +323,8 @@ const catChart = new Chart(document.getElementById('categoriesChart'), {
     }
 });
 
-// ── Mettre à jour les couleurs si le thème change ──
 document.addEventListener('themeChanged', () => {
-    location.reload(); // Recharge pour appliquer les nouvelles couleurs Chart.js
+    location.reload(); 
 });
 </script>
 @endpush

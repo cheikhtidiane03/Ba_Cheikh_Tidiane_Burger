@@ -11,11 +11,8 @@ on:
 
 jobs:
 
-  # ══════════════════════════════════════
-  # JOB 1 : Tests Laravel
-  # ══════════════════════════════════════
   test:
-    name: 🧪 Tests Laravel
+    name: Code
     runs-on: ubuntu-latest
 
     services:
@@ -34,24 +31,24 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: 📥 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 🐘 PHP 8.2
+      - name: PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: pdo, pdo_pgsql, gd, zip, bcmath
 
-      - name: 📦 Composer install
+      - name: Composer install
         run: composer install --no-dev --prefer-dist --no-interaction
 
-      - name: 🎨 npm install + build
+      - name: npm install + build
         run: |
           npm ci
           npm run build
 
-      - name: ⚙️ Configuration .env
+      - name: Configuration .env
         run: |
           cp .env.example .env
           php artisan key:generate
@@ -67,17 +64,14 @@ jobs:
           # Afficher pour debug (sans mot de passe)
           grep "DB_" .env | grep -v PASSWORD
 
-      - name: 🗄️ Migrations
+      - name: Migrations
         run: php artisan migrate --force
 
-      - name: ✅ Vérification finale
+      - name: Vérification
         run: php artisan about
 
-  # ══════════════════════════════════════
-  # JOB 2 : Build image Docker
-  # ══════════════════════════════════════
   build-docker:
-    name: 🐳 Build image Docker
+    name: Build image Docker
     runs-on: ubuntu-latest
     needs: test
 
@@ -87,8 +81,8 @@ jobs:
 
       - name: 🔧 Vérifier que docker/ existe
         run: |
-          ls -la docker/ || echo "⚠️ Dossier docker/ manquant"
-          ls -la Dockerfile || echo "⚠️ Dockerfile manquant"
+          ls -la docker/ || echo "Dossier docker/ manquant"
+          ls -la Dockerfile || echo "Dockerfile manquant"
 
       - name: 🐳 Build image Docker
         run: |
@@ -98,10 +92,10 @@ jobs:
             --tag isi-burger:latest \
             .
 
-      - name: ✅ Vérifier l'image créée
+      - name: Vérifier l'image
         run: |
           docker images isi-burger
-          echo "## ✅ Image Docker créée !" >> $GITHUB_STEP_SUMMARY
+          echo "## Image Docker créée !" >> $GITHUB_STEP_SUMMARY
           echo "- **Tag:** isi-burger:${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY

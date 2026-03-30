@@ -8,9 +8,6 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-    {{-- ══════════════════════════
-         COLONNE PRINCIPALE
-    ══════════════════════════ --}}
     <div class="lg:col-span-2 space-y-5">
 
         {{-- Articles commandés --}}
@@ -40,7 +37,7 @@
                                             <img src="{{ asset('storage/'.$item->product->image) }}"
                                                  class="w-full h-full object-cover">
                                         @else
-                                            🍔
+                                            
                                         @endif
                                     </div>
                                     <span class="font-semibold text-gray-800 dark:text-white text-sm">
@@ -93,7 +90,7 @@
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-500/20
                             rounded-xl flex items-center justify-center text-xl">
-                    💳
+                    
                 </div>
                 <div>
                     <h3 class="font-bold text-emerald-800 dark:text-emerald-400 text-sm">
@@ -120,7 +117,7 @@
                         Mode
                     </p>
                     <p class="font-semibold text-emerald-800 dark:text-emerald-300 text-sm">
-                        💵 Espèces
+                        Espèces
                     </p>
                 </div>
                 <div>
@@ -144,9 +141,7 @@
 
     </div>
 
-    {{-- ══════════════════════════
-         COLONNE DROITE
-    ══════════════════════════ --}}
+
     <div class="space-y-4">
 
         {{-- Statut & Actions --}}
@@ -155,10 +150,10 @@
 
             @php
                 $steps = [
-                    ['key' => 'pending',   'label' => 'En attente',     'icon' => '⏳'],
-                    ['key' => 'preparing', 'label' => 'En préparation', 'icon' => '👨‍🍳'],
-                    ['key' => 'ready',     'label' => 'Prête',          'icon' => '✅'],
-                    ['key' => 'paid',      'label' => 'Payée',          'icon' => '💰'],
+                    ['key' => 'pending',   'label' => 'En attente',     'icon' => ''],
+                    ['key' => 'preparing', 'label' => 'En préparation', 'icon' => ''],
+                    ['key' => 'ready',     'label' => 'Prête',          'icon' => ''],
+                    ['key' => 'paid',      'label' => 'Payée',          'icon' => ''],
                 ];
                 $statusOrder = ['pending' => 0, 'preparing' => 1, 'ready' => 2, 'paid' => 3, 'cancelled' => -1];
                 $currentIdx  = $statusOrder[$order->status] ?? -1;
@@ -212,8 +207,8 @@
 
                     @php
                         $nextStatuses = [
-                            'pending'   => [['key' => 'preparing', 'label' => '👨‍🍳 Mettre en préparation', 'class' => 'btn-primary']],
-                            'preparing' => [['key' => 'ready',     'label' => '✅ Marquer comme prête',     'class' => 'btn-success']],
+                            'pending'   => [['key' => 'preparing', 'label' => 'Mettre en préparation', 'class' => 'btn-primary']],
+                            'preparing' => [['key' => 'ready',     'label' => ' Marquer comme prête',     'class' => 'btn-success']],
                         ];
                         $buttons = $nextStatuses[$order->status] ?? [];
                     @endphp
@@ -243,7 +238,7 @@
                                     border border-emerald-200 dark:border-emerald-500/30
                                     rounded-xl p-4 mt-1">
                             <p class="text-sm font-bold text-emerald-800 dark:text-emerald-400 mb-3 flex items-center gap-2">
-                                <span>💵</span> Enregistrer le paiement en espèces
+                                <span></span> Enregistrer le paiement en espèces
                             </p>
                             <form method="POST" action="{{ route('admin.payments.store', $order) }}">
                                 @csrf
