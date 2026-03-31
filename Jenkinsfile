@@ -24,51 +24,48 @@ pipeline {
             steps {
                 echo '📥 Récupération du code...'
                 git branch: "${BRANCH}", url: "${REPO_URL}"
-                echo "✅ Code récupéré — Commit : ${env.GIT_COMMIT?.take(8)}"
+                echo "✅ Code récupéré !"
             }
         }
 
-        stage('📦 2. Installation dépendances') {
-            parallel {
-                stage('Composer') {
-                    steps {
-                        sh 'composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader'
-                    }
-                }
-                stage('npm + build') {
-                    steps {
-                        sh 'npm ci'
-                        sh 'npm run build'
-                    }
-                }
-            }
-        }
-
-        stage('🐳 3. Build image Docker') {
+        stage('📦 2. Composer install') {
             steps {
-                sh '''
-                    echo "🐳 Construction de l'image Docker..."
-                    docker build --no-cache -t isi-burger:latest .
-                    echo "✅ Image créée"
-                    docker images isi-burger
-                '''
+                echo '📦 Installation des dépendances PHP...'
+                sh 'composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader'
+                echo '✅ Composer OK'
             }
         }
 
-        stage('🚀 4. Déploiement') {
+        stage('🎨 3. npm install + build') {
             steps {
-                sh '''
-                    echo "🚀 Déploiement..."
-                    docker compose down --remove-orphans 2>/dev/null || true
-                    docker compose up -d
-                    echo "⏳ Attente démarrage (15s)..."
-                    sleep 15
-                    docker compose ps
-                '''
+                echo '🎨 Build des assets...'
+                sh 'npm ci'
+                sh 'npm run build'
+                echo '✅ Assets compilés'
             }
         }
 
-        stage('🧹 5. Nettoyage') {
+        stage('🐳 4. Build image Docker') {
+            steps {
+                echo '🐳 Construction de l\'image Docker...'
+                sh 'docker build --no-cache -t isi-burger:latest .'
+                echo '✅ Image Docker créée'
+                sh 'docker images isi-burger'
+            }
+        }
+
+        stage('🚀 5. Déploiement') {
+            steps {
+                echo '🚀 Déploiement avec Docker Compose...'
+                sh 'docker compose down --remove-orphans 2>/dev/null || true'
+                sh 'docker compose up -d'
+                sh 'sleep 10'
+                sh 'docker compose ps'
+                echo '✅ Déployé !'
+            }
+        }
+
+        stage('🧹 6. Nettoyage') {
             steps {
                 sh 'docker image prune -f 2>/dev/null || true'
                 echo '✅ Nettoyage terminé'
@@ -81,11 +78,11 @@ pipeline {
             echo '✅ ISI BURGER déployé sur http://localhost:8080'
         }
         failure {
-            sh 'docker compose logs --tail=50 2>/dev/null || true'
-            echo '❌ Pipeline échoué — voir les logs ci-dessus'
+            sh 'docker compose logs --tail=30 2>/dev/null || true'
+            echo '❌ Pipeline échoué'
         }
         always {
-            echo "Pipeline terminé — Build #${BUILD_NUMBER}"
+            echo "Build #${BUILD_NUMBER} terminé"
         }
     }
 }
