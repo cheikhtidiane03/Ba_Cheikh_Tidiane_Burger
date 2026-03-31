@@ -25,7 +25,7 @@ pipeline {
 
     stages {
 
-        // ── Étape 1 : Pull du code ──────────────────
+        // ── Étape 1 : Pull du code ─────────────────
         stage('📥 Pull du code') {
             steps {
                 echo '📥 Récupération du code depuis GitHub...'
