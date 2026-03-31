@@ -31,7 +31,7 @@ pipeline {
         stage('📦 2. Composer install') {
             steps {
                 echo '📦 Installation des dépendances PHP...'
-                sh 'composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader'
+                sh 'docker run --rm -v $(pwd):/app -w /app composer:2.7 install --no-dev --prefer-dist --no-interaction --optimize-autoloader'
                 echo '✅ Composer OK'
             }
         }
