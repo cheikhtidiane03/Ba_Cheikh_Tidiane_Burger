@@ -11,12 +11,12 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Burgers',  'description' => 'Categorie principale pour tous les burgers classiques'],
-            ['name' => 'Burgers',  'description' => 'Categorie principale pour tous les burgers classiques'],
-            ['name' => 'Burgers',  'description' => 'Categorie principale pour tous les burgers classiques'],
-            ['name' => 'Burgers',  'description' => 'Categorie principale pour tous les burgers classiques'],
-            ['name' => 'Burgers',  'description' => 'Categorie principale pour tous les burgers classiques'],
-            ['name' => 'Burgers',  'description' => 'Categorie principale pour tous les burgers classiques'],
+            ['name' => 'Burgers Classiques',  'description' => 'Nos incontournables burgers traditionnels'],
+            ['name' => 'Burgers Spéciaux',    'description' => 'Créations exclusives du chef'],
+            ['name' => 'Burgers Végétariens', 'description' => 'Burgers sans viande, 100% savoureux'],
+            ['name' => 'Menus',               'description' => 'Burger + frites + boisson'],
+            ['name' => 'Boissons',            'description' => 'Sodas, jus et boissons fraîches'],
+            ['name' => 'Desserts',            'description' => 'Pour finir en beauté'],
         ];
 
         foreach ($categories as $cat) {
@@ -29,6 +29,6 @@ class CategorySeeder extends Seeder
             );
         }
 
-        //$this->command->info('Catégories créées : ' . count($categories));
+        $this->command->info('✅ Catégories créées : ' . count($categories));
     }
 }

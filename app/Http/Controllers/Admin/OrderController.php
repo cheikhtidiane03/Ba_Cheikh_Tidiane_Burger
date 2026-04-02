@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Mail\OrderReadyMail;
 use App\Models\Order;
+use App\Services\MailService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -24,7 +23,6 @@ class OrderController extends Controller
             ->latest()
             ->paginate(15);
 
-        $statusOptions = Order::statusOptions();
         $counts = [
             'all'       => Order::count(),
             'pending'   => Order::where('status', 'pending')->count(),
@@ -34,12 +32,12 @@ class OrderController extends Controller
             'cancelled' => Order::where('status', 'cancelled')->count(),
         ];
 
-        return view('admin.orders.index', compact('orders', 'statusOptions', 'counts'));
+        return view('admin.orders.index', compact('orders', 'counts'));
     }
 
     public function show(Order $order)
     {
-        $order->load(['user', 'items.product', 'payment.recorder']);
+        $order->load(['user', 'items.product', 'payment']);
         return view('admin.orders.show', compact('order'));
     }
 
@@ -53,18 +51,23 @@ class OrderController extends Controller
 
         if (!$order->canTransitionTo($newStatus)) {
             return back()->with('error',
-                'Transition non autorisée : ' . $order->status_label . ' → ' . Order::statusOptions()[$newStatus]['label']
+                'Transition non autorisée : ' . $order->status_label . ' → ' . $newStatus
             );
         }
 
         $order->update(['status' => $newStatus]);
 
+        // Email + PDF quand commande est PRÊTE
         if ($newStatus === Order::STATUS_READY) {
-            try {
-                Mail::to($order->user->email)->send(new OrderReadyMail($order));
-            } catch (\Exception $e) {
-                \Log::error('Email commande prête : ' . $e->getMessage());
-            }
+            $order->load(['items.product', 'user']);
+            $sent = MailService::sendOrderReady($order);
+
+            $msg = 'Commande ' . $order->reference . ' marquée comme prête.';
+            $msg .= $sent
+                ? ' 📧 Email + facture PDF envoyés au client.'
+                : ' ⚠️ Commande mise à jour mais email non envoyé (voir logs).';
+
+            return back()->with('success', $msg);
         }
 
         return back()->with('success',

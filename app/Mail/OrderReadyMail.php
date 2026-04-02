@@ -33,7 +33,6 @@ class OrderReadyMail extends Mailable
 
     public function attachments(): array
     {
-        // Générer la facture PDF
         $pdf = Pdf::loadView('emails.orders.invoice-pdf', [
             'order' => $this->order->load(['items.product', 'user']),
         ]);

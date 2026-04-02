@@ -4,15 +4,17 @@ on:
   push:
     branches:
       - Cheikh-Tidiane-Ba
-      - main
   pull_request:
     branches:
       - Cheikh-Tidiane-Ba
 
 jobs:
 
-  test:
-    name: Code
+  # ══════════════════════════════════════
+  # JOB 1 — Installation dépendances Laravel
+  # ══════════════════════════════════════
+  install-and-test:
+    name: 📦 Installation dépendances Laravel
     runs-on: ubuntu-latest
 
     services:
@@ -31,71 +33,92 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout
+      - name: 📥 Pull du code depuis GitHub
         uses: actions/checkout@v4
 
-      - name: PHP 8.2
+      - name: 🐘 Configuration PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: pdo, pdo_pgsql, gd, zip, bcmath
+          extensions: pdo, pdo_pgsql, gd, zip, bcmath, mbstring, xml
 
-      - name: Composer install
-        run: composer install --no-dev --prefer-dist --no-interaction
-
-      - name: npm install + build
+      - name: 📦 Installation des dépendances PHP (Composer)
         run: |
-          npm ci
-          npm run build
+          echo "📦 Installation Composer..."
+          composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+          echo "✅ Composer OK"
 
-      - name: Configuration .env
+      - name: 🎨 Installation des dépendances JS + Build assets
+        run: |
+          echo "🎨 Installation npm..."
+          npm ci
+          echo "🔨 Build Tailwind/Vite..."
+          npm run build
+          echo "✅ Assets compilés"
+
+      - name: ⚙️ Configuration environnement (.env)
         run: |
           cp .env.example .env
+
+          # Configurer la clé
           php artisan key:generate
 
           # Configurer PostgreSQL
-          sed -i 's|^DB_CONNECTION=.*|DB_CONNECTION=pgsql|' .env
-          sed -i 's|^#.*DB_HOST=.*|DB_HOST=127.0.0.1|' .env
-          sed -i 's|^#.*DB_PORT=.*|DB_PORT=5432|' .env
-          sed -i 's|^#.*DB_DATABASE=.*|DB_DATABASE=isi_burger|' .env
-          sed -i 's|^#.*DB_USERNAME=.*|DB_USERNAME=postgres|' .env
-          sed -i 's|^#.*DB_PASSWORD=.*|DB_PASSWORD=${{ secrets.DB_PASSWORD }}|' .env
+          cat >> .env << 'EOF'
+          DB_CONNECTION=pgsql
+          DB_HOST=127.0.0.1
+          DB_PORT=5432
+          DB_DATABASE=isi_burger
+          DB_USERNAME=postgres
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          EOF
 
-          # Afficher pour debug (sans mot de passe)
-          grep "DB_" .env | grep -v PASSWORD
+          echo "✅ .env configuré"
 
-      - name: Migrations
-        run: php artisan migrate --force
+      - name: 🗄️ Migration de la base de données
+        run: |
+          php artisan migrate --force
+          echo "✅ Migrations OK"
 
-      - name: Vérification
+      - name: ✅ Vérification finale
         run: php artisan about
 
+  # ══════════════════════════════════════
+  # JOB 2 — Création image Docker
+  # ══════════════════════════════════════
   build-docker:
-    name: Build image Docker
+    name: 🐳 Création image Docker
     runs-on: ubuntu-latest
-    needs: test
+    needs: install-and-test
 
     steps:
-      - name: 📥 Checkout
+      - name: 📥 Pull du code depuis GitHub
         uses: actions/checkout@v4
 
-      - name: 🔧 Vérifier que docker/ existe
+      - name: 🔍 Vérification des fichiers Docker
         run: |
-          ls -la docker/ || echo "Dossier docker/ manquant"
-          ls -la Dockerfile || echo "Dockerfile manquant"
+          echo "=== Fichiers présents ==="
+          ls -la
+          echo "=== Dossier docker/ ==="
+          ls -la docker/ 2>/dev/null || echo "⚠️  Créer le dossier docker/"
 
-      - name: 🐳 Build image Docker
+      - name: 🐳 Création de l'image Docker
         run: |
+          echo "🐳 Build de l'image isi-burger..."
           docker build \
             --no-cache \
-            --tag isi-burger:${{ github.sha }} \
             --tag isi-burger:latest \
+            --tag isi-burger:${{ github.sha }} \
             .
+          echo "✅ Image créée !"
 
-      - name: Vérifier l'image
+      - name: 📋 Résumé du build
         run: |
           docker images isi-burger
-          echo "## Image Docker créée !" >> $GITHUB_STEP_SUMMARY
-          echo "- **Tag:** isi-burger:${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "## ✅ Pipeline ISI BURGER réussi !" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Info | Valeur |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Image | isi-burger:latest |" >> $GITHUB_STEP_SUMMARY

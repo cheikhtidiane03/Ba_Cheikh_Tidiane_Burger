@@ -13,18 +13,17 @@ services:
       APP_ENV: production
       APP_DEBUG: "false"
       APP_URL: http://localhost
-      APP_KEY: ""
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: isi_burger
       DB_USERNAME: postgres
-      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      DB_PASSWORD: ${DB_PASSWORD:-19732580}
       MAIL_MAILER: smtp
       MAIL_HOST: sandbox.smtp.mailtrap.io
       MAIL_PORT: 2525
-      MAIL_USERNAME: ${MAIL_USERNAME:-}
-      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_USERNAME: ${MAIL_USERNAME:-e621cd7622881e}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-185229d741b1da}
       MAIL_ENCRYPTION: tls
       MAIL_FROM_ADDRESS: noreply@isiburger.com
       MAIL_FROM_NAME: "ISI BURGER"
@@ -49,7 +48,7 @@ services:
     environment:
       POSTGRES_DB: isi_burger
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-19732580}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -64,9 +63,7 @@ services:
 
 volumes:
   postgres_data:
-    driver: local
   app_storage:
-    driver: local
 
 networks:
   isi_burger_network:
