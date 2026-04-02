@@ -51,7 +51,7 @@ pipeline {
                 sh 'docker-compose up -d'
                 sh 'sleep 10'
                 sh 'docker-compose ps'
-                echo '✅ Application déployée sur http://localhost:8080'
+                echo '✅ Application déployée sur http://localhost:8082'
             }
         }
 
