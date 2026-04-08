@@ -124,7 +124,7 @@ document.addEventListener('alpine:init', () => setTimeout(() =>
         {{-- Logo --}}
         <div class="flex items-center gap-3 px-3.5 py-4 border-b border-gray-100 dark:border-slate-800 min-h-[57px]">
             <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center text-sm flex-shrink-0 shadow-md shadow-blue-600/30">
-                🍔
+                
             </div>
             <div x-show="open" x-cloak class="min-w-0 overflow-hidden">
                 <p class="font-black text-sm text-gray-900 dark:text-white leading-tight">ISI BURGER</p>

@@ -126,7 +126,7 @@ document.addEventListener('alpine:init', () => setTimeout(() =>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
                 </svg>
-                <span x-show="open" x-cloak class="truncate">Notre Carte</span>
+                <span x-show="open" x-cloak class="truncate">Nos Produits</span>
             </a>
 
             <a href="{{ route('client.orders.index') }}"
