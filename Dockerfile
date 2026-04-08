@@ -1,6 +1,3 @@
-# ══════════════════════════════════════════════════
-#  ISI BURGER — Dockerfile
-# ══════════════════════════════════════════════════
 
 # Stage 1 — Build assets JS/CSS
 FROM node:20-alpine AS node-builder

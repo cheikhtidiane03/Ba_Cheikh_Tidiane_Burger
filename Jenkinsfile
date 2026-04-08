@@ -9,6 +9,7 @@ pipeline {
         IMAGE_NAME = 'isi-burger'
     }
 
+
     triggers {
         githubPush()
     }
