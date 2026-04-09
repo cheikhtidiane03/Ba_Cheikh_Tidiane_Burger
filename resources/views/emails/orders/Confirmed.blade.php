@@ -40,7 +40,7 @@
 <div class="wrapper">
 
     <div class="header">
-        <div class="logo">🍔</div>
+        <div class="logo"></div>
         <h1>ISI BURGER</h1>
         <p>Confirmation de votre commande</p>
     </div>
@@ -66,7 +66,7 @@
             <tbody>
                 @foreach($order->items as $item)
                 <tr>
-                    <td>🍔 {{ $item->product->name }}</td>
+                    <td> {{ $item->product->name }}</td>
                     <td style="text-align:center">× {{ $item->quantity }}</td>
                     <td>{{ $item->formatted_subtotal }}</td>
                 </tr>
@@ -92,8 +92,8 @@
 
     <div class="footer">
         <p>Merci pour votre confiance ! 🙏<br>
-        <strong>ISI BURGER</strong> — Burgers artisanaux<br>
-        Cet email a été envoyé automatiquement, merci de ne pas répondre.</p>
+        </p>
+
     </div>
 
 </div>

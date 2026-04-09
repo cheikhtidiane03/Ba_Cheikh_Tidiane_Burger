@@ -33,13 +33,13 @@
 <div class="wrapper">
 
     <div class="header">
-        <h1>🍔 ISI BURGER — Gestionnaire</h1>
+        <h1>ISI BURGER — Gestionnaire</h1>
         <p>Notification automatique</p>
     </div>
 
     <div class="alert">
         <span class="icon">🔔</span>
-        <p>Nouvelle commande reçue — action requise</p>
+        <p>Nouvelle commande reçue </p>
     </div>
 
     <div class="body">

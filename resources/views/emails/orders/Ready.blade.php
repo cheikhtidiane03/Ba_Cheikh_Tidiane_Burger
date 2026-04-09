@@ -39,7 +39,7 @@
 <div class="wrapper">
 
     <div class="header">
-        <div class="logo">🍔</div>
+        <div class="logo"></div>
         <h1>ISI BURGER</h1>
         <p>Votre commande est prête !</p>
     </div>
@@ -66,7 +66,7 @@
             <tbody>
                 @foreach($order->items as $item)
                 <tr>
-                    <td>🍔 {{ $item->product->name }}</td>
+                    <td> {{ $item->product->name }}</td>
                     <td style="text-align:center">× {{ $item->quantity }}</td>
                     <td>{{ $item->formatted_subtotal }}</td>
                 </tr>

@@ -67,9 +67,9 @@
     {{-- Header --}}
     <div class="header clearfix">
         <div class="header-left">
-            <div style="font-size:28px;margin-bottom:4px;">🍔</div>
+            <div style="font-size:28px;margin-bottom:4px;"></div>
             <div class="logo-text">ISI BURGER</div>
-            <div class="logo-sub">Restaurant de burgers artisanaux</div>
+            <div class="logo-sub">Restaurant de burgers </div>
         </div>
         <div class="header-right">
             <div class="invoice-title">FACTURE</div>
@@ -141,7 +141,7 @@
 
     {{-- Footer --}}
     <div class="footer">
-        <p>ISI BURGER — Burgers artisanaux | Merci pour votre confiance ! | Facture générée automatiquement.</p>
+        <p>ISI BURGER — Burgers artisanaux | Merci pour votre confiance .</p>
     </div>
 
 </div>
