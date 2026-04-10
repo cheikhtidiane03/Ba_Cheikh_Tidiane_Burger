@@ -257,7 +257,7 @@
                                                class="form-input">
                                     </div>
                                     <button type="submit" class="btn-success w-full justify-center">
-                                        ✅ Confirmer le paiement
+                                         Confirmer le paiement
                                     </button>
                                 </div>
                             </form>
@@ -276,7 +276,7 @@
                                 'Annuler la commande',
                                 'cancel-form-{{ $order->id }}')"
                             class="btn-danger w-full justify-center">
-                        ❌ Annuler la commande
+                         Annuler la commande
                     </button>
 
                 </div>
